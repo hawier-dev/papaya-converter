@@ -1,0 +1,26 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Papaya</title>
+    <link rel="stylesheet" href="{% static 'colors.css' %}">
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.12.2/dist/css/uikit.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.12.2/dist/js/uikit.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.12.2/dist/js/uikit-icons.min.js"></script>
+</head>
+<body class="background">
+    <div class="box surface radius-small">
+        <h3 class="white-text uk-text-bolder">Enter youtube video URL</h3>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button class="primary-container button white-text uk-text-bolder radius-small" type="submit">Submit</button>
+            <button class="secondary-container button white-text uk-text-bolder radius-small" type="button">History</button>
+        </form>
+    </div>
+</body>
+</html>
