@@ -6,21 +6,35 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Papaya</title>
-    <link rel="stylesheet" href="{% static 'colors.css' %}">
-    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <link rel="stylesheet" href="{{ video_style }}.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.12.2/dist/css/uikit.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/uikit@3.12.2/dist/js/uikit.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/uikit@3.12.2/dist/js/uikit-icons.min.js"></script>
 </head>
-<body class="background">
-    <div class="box surface radius-small">
-        <h3 class="white-text uk-text-bolder">Enter youtube video URL</h3>
+<body>
+    <div class="uk-card uk-card-default uk-card-body uk-width-1-2@m">
+        <h3 class="uk-text-large">Enter youtube video URL</h3>
         <form method="post">
             {% csrf_token %}
-            {{ form.as_p }}
-            <button class="primary-container button white-text uk-text-bolder radius-small" type="submit">Submit</button>
-            <button class="secondary-container button white-text uk-text-bolder radius-small" type="button">History</button>
-        </form>
+            <input class="uk-input" type="text" name="url" id="url" placeholder="https://">
+            <button class="uk-button uk-button-primary uk-margin-top" type="submit">Find Video</button>
+        </form>    
+    </div>
+    <div class="uk-card uk-card-default uk-grid-collapse uk-child-width-1-2@s uk-margin" uk-grid>
+        <div>
+            <div class="uk-card-body">
+                <h3 class="uk-card-title">{{ title }}</h3>
+                <p>{{ author }}</p>
+                <form method="post">
+                    <select class="uk-select uk-margin-top" name="resolution" id="resolution">
+                        {% for q in quality %}
+                        <option value={{ q }}>{{ q }}</option>
+                        {% endfor %}
+                    </select>
+                    <button class="uk-button uk-button-primary uk-margin-top" type="submit">Download Video</button>
+                </form>
+            </div>
+        </div>
     </div>
 </body>
 </html>
