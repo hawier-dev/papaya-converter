@@ -1,40 +1,94 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Papaya</title>
-    <link rel="stylesheet" href="{{ video_style }}.css">
+    <link rel="stylesheet" href="{% static styles.css %}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.12.2/dist/css/uikit.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/uikit@3.12.2/dist/js/uikit.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/uikit@3.12.2/dist/js/uikit-icons.min.js"></script>
 </head>
+
 <body>
-    <div class="uk-card uk-card-default uk-card-body uk-width-1-2@m">
+    <nav class="uk-navbar-container uk-padding-small" uk-navbar>
+        <div class="uk-navbar-center">
+            <a class="uk-navbar-item uk-logo" href="#">Papaya converter</a>
+
+        </div>
+        <div class="uk-navbar-right">
+            <a href="#settings-modal" uk-icon="icon: cog" uk-toggle></a>
+        </div>
+    </nav>
+    <div class="uk-card uk-card-default uk-card-body uk-width-1-2@m uk-align-center">
         <h3 class="uk-text-large">Enter youtube video URL</h3>
         <form method="post">
             {% csrf_token %}
-            <input class="uk-input" type="text" name="url" id="url" placeholder="https://">
+            <input class="uk-input" type="text" name="url" id="url" placeholder="https://" required pattern="^(?:https?:\/\/)?(?:m\.|www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(\?\S*)?$" title="Enter youtube video URL">
             <button class="uk-button uk-button-primary uk-margin-top" type="submit">Find Video</button>
-        </form>    
+        </form>
     </div>
-    <div class="uk-card uk-card-default uk-grid-collapse uk-child-width-1-2@s uk-margin" uk-grid>
+    <div class="uk-card uk-card-default uk-grid-collapse uk-width-1-2@s uk-margin uk-align-center {{ video_style }}" uk-grid>
         <div>
             <div class="uk-card-body">
                 <h3 class="uk-card-title">{{ title }}</h3>
                 <p>{{ author }}</p>
                 <form method="post">
-                    <select class="uk-select uk-margin-top" name="resolution" id="resolution">
+                    {% csrf_token %}
+                    <select class="uk-select uk-margin-top" name="quality" id="quality">
                         {% for q in quality %}
                         <option value={{ q }}>{{ q }}</option>
                         {% endfor %}
                     </select>
-                    <button class="uk-button uk-button-primary uk-margin-top" type="submit">Download Video</button>
+                    <button class="uk-button uk-button-primary uk-margin-top" value="{{ url }}" name="download" id="download" type="submit">Download Video</button>
                 </form>
             </div>
         </div>
     </div>
+    <div class="uk-align-center uk-width-1-2@s uk-padding">
+        <h1>History</h1>
+        <ul class="uk-list">
+            {% for video in videos %}
+            <li>
+                <div class="uk-column-1-2">
+                    <h4>{{ video.title }}</h4>
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" value="{{ video.quality }}" name="quality" id="quality" />
+                        <button class="uk-button uk-button-primary uk-align-right" value="{{ video.video_url }}" name="download" id="download" type="submit">Download Again</button>
+                    </form>
+                    <div class="uk-column-span">
+                        <hr>
+                    </div>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- MODAL -->
+    <div id="settings-modal" uk-modal>
+        <div class="uk-modal-dialog">
+            <button class="uk-modal-close-default" type="button" uk-close></button>
+            <div class="uk-modal-header">
+                <h2 class="uk-modal-title">Settings</h2>
+            </div>
+            <div class="uk-modal-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <label>Download folder</label>
+                    <input type="text" name="download-folder" id="download-folder">
+                </form>
+            </div>
+            <div class="uk-modal-footer uk-text-right">
+                <button class="uk-button uk-button-default uk-modal-close" type="button">Cancel</button>
+                <button class="uk-button uk-button-primary" type="button">Save</button>
+            </div>
+        </div>
+    </div>
 </body>
+
 </html>
