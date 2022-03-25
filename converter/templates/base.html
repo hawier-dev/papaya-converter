@@ -39,8 +39,10 @@
                     <h4>{{ video.title }}</h4>
                     <form method="post">
                         {% csrf_token %}
-                        <input type="hidden" value="{{ video.quality }}" name="quality" id="quality" />
-                        <button class="uk-button uk-button-primary uk-align-right" value="{{ video.video_url }}" name="download" id="download" type="submit">Download Again</button>
+                        <input type="hidden" value="{{ video.quality }}" name="quality" id="quality">
+                        <input type="hidden" value="{{ video.video_url }}" name="link" id="link">
+                        <button class="uk-button uk-button-primary uk-align-right" name="downloadvideo" id="downloadvideo" type="submit">Download Video</button>
+                        <button class="uk-button uk-button-primary uk-align-right" name="downloadaudio" id="downloadaudio" type="submit">Download Audio</button>
                     </form>
                     <div class="uk-column-span">
                         <hr>
