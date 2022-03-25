@@ -1,4 +1,5 @@
 import os
+from pytube.exceptions import RegexMatchError, VideoUnavailable
 from pathlib import Path
 from django.http import HttpRequest
 from django.shortcuts import render
@@ -31,12 +32,19 @@ def dashboard(request):
                 if stream.resolution not in quality:
                     quality.append(stream.resolution)
             quality.reverse()
-            return render(request, 'base.html', {'title': title, 'author': author, 'quality': quality, 'url': link, 'video_style': 'uk-visible', 'videos': videos})
+            return render(request, 'base_video.html', {'title': title, 'author': author, 'quality': quality, 'url': link, 'videos': videos, 'download_dir': download_dir})
+
+        # Download  POST
         if 'quality' in request.POST:
             selected_quality = request.POST['quality']
-            download_link = request.POST['download']
-            youtube = YouTube(download_link)
-            filename = download_dir + '/' + youtube.title + '.mp4'
+            download_link = request.POST['link']
+            try:
+                youtube = YouTube(download_link)
+                filename = download_dir + '/' + youtube.title + '.mp4'
+            except (RegexMatchError, VideoUnavailable) as e:
+                print('ERROR: ' + e)
+                return render(request, 'base.html', {'videos': videos, 'download_dir': download_dir})
+
             if os.path.exists(filename):
                 os.remove(filename)
 
@@ -47,6 +55,10 @@ def dashboard(request):
             # Convert mp4 to mp3
             ffmpeg.output(ffmpeg.input('audio.mp4').audio, 'audio.mp3').run()
             os.remove('audio.mp4')
+            if 'downloadaudio' in request.POST:
+                os.rename('audio.mp3', download_dir +
+                          "/" + youtube.title + ".mp3")
+                return render(request, 'base.html', {'videos': videos, 'download_dir': download_dir})
 
             # Download video
             video = youtube.streams.filter(
@@ -65,8 +77,13 @@ def dashboard(request):
             video_model.title = youtube.title
             video_model.video_url = download_link
             video_model.quality = selected_quality
-            if Video.objects.filter(video_url=download_link).exists() == False:
+            if Video.objects.filter(title=youtube.title).exists() == False:
                 video_model.save()
-            return render(request, 'base.html', {'title': '', 'author': '', 'quality': [], 'url': '', 'video_style': 'uk-hidden', 'videos': videos})
+            return render(request, 'base.html', {'videos': videos, 'download_dir': download_dir})
 
-    return render(request, 'base.html', {'title': '', 'author': '', 'quality': [], 'url': '', 'video_style': 'uk-hidden', 'videos': videos})
+        # Saving settings
+        if 'save' in request.POST:
+            download_dir = request.POST['download-folder']
+            Settings.objects.all().update(download_dir=download_dir)
+
+    return render(request, 'base.html', {'videos': videos, 'download_dir': download_dir})

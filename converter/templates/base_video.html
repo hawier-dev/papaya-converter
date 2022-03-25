@@ -3,11 +3,11 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Papaya</title>
-    <link rel="stylesheet" href="{% static styles.css %}">
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Video found</title>
+    <link rel="stylesheet" href="{% static styles.css %}" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.12.2/dist/css/uikit.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/uikit@3.12.2/dist/js/uikit.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/uikit@3.12.2/dist/js/uikit-icons.min.js"></script>
@@ -26,9 +26,31 @@
         <h3 class="uk-text-large">Enter youtube video URL</h3>
         <form method="post">
             {% csrf_token %}
-            <input class="uk-input" type="text" name="url" id="url" placeholder="https://" required pattern="^(?:https?:\/\/)?(?:m\.|www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(\?\S*)?$" title="Enter youtube video URL">
-            <button class="uk-button uk-button-primary uk-margin-top" type="submit">Find Video</button>
+            <input class="uk-input" type="text" name="url" id="url" placeholder="https://" required pattern="^(?:https?:\/\/)?(?:m\.|www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(\?\S*)?$" title="Enter youtube video URL"
+            />
+            <button class="uk-button uk-button-primary uk-margin-top" type="submit">
+          Find Video
+        </button>
         </form>
+    </div>
+    <div class="uk-card uk-card-default uk-grid-collapse uk-width-1-2@s uk-margin uk-align-center" uk-grid>
+        <div>
+            <div class="uk-card-body">
+                <h3 class="uk-card-title">{{ title }}</h3>
+                <p>{{ author }}</p>
+                <form method="post">
+                    {% csrf_token %}
+                    <select class="uk-select uk-margin-top" name="quality" id="quality">
+                    {% for q in quality %}
+                    <option value="{{ q }}">{{ q }}</option>
+                    {% endfor %}
+                    </select>
+                    <input type="hidden" value="{{ url }}" name="link" id="link">
+                    <button class="uk-button uk-button-primary uk-margin-top" name="downloadvideo" id="downloadvideo" type="submit">Download Video</button>
+                    <button class="uk-button uk-button-primary uk-margin-top" name="downloadaudio" id="downloadaudio" type="submit">Download Audio</button>
+                </form>
+            </div>
+        </div>
     </div>
     <div class="uk-align-center uk-width-1-2@s uk-padding">
         <h1>History</h1>
@@ -40,10 +62,12 @@
                     <form method="post">
                         {% csrf_token %}
                         <input type="hidden" value="{{ video.quality }}" name="quality" id="quality" />
-                        <button class="uk-button uk-button-primary uk-align-right" value="{{ video.video_url }}" name="download" id="download" type="submit">Download Again</button>
+                        <button class="uk-button uk-button-primary uk-align-right" value="{{ video.video_url }}" name="download" id="download" type="submit">
+                Download Again
+              </button>
                     </form>
                     <div class="uk-column-span">
-                        <hr>
+                        <hr />
                     </div>
                 </div>
             </li>
